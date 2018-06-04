@@ -71,7 +71,7 @@ def portal():
     sleepTime = answer["sleepTime"]
 
     for i in range(int(answer["pages"])):
-        print("\n\nStart the No." + str(i) + " scratch......\n")
+        print("\n\nStart the No." + str(i + 1) + " scratch......\n")
         time.sleep(sleepTime)
         result = scratchTag(str(i + 1), answer["fileName"])
         print("--------------------")

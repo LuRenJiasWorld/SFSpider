@@ -10,8 +10,6 @@ import ssl
 import time
 import os
 import csv
-import pathlib
-
 
 # Define some variables
 counter = 0

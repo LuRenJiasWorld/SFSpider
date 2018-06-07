@@ -10,6 +10,8 @@ import ssl
 import time
 import os
 import csv
+import translate
+import random
 
 # Define some variables
 counter = 0
@@ -33,13 +35,17 @@ def scratchTag(page, fileName):
     with open("./" + fileName, "a+", encoding="utf-8") as f:
         for each in soupObj.select("div.widget-tag h2 a"):
             fieldnames = ["id", "zh-cn", "en-us"]
-            eachRow = {"id": str(counter + 1), "zh-cn": each.get_text(), "en-us": each.get_text()}
+            eachRow = {"id": str(counter + 1), "zh-cn": each.get_text(), "en-us": translate.translate("zh-CN", "en", each.get_text()).strip()}
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writerow(eachRow)
             print("- Data No." + str(counter) + ":")
             for key, value in eachRow.items():
                 print("\t" + key + " - " + value)
             counter += 1
+
+        # In case of being banned by Google Translate, sleep for a while
+        time.sleep(random.randint(10, 30))
+        print("\n\nCooling.......\n\n");
 
     return counter
 
@@ -79,7 +85,7 @@ def portal():
         time.sleep(sleepTime)
 
     print("\n\n-----------Scratch Complete!-----------\n\n")
-    print("Statistics: " + str(result) + "tags get, saved in ./" + answer["fileName"])
+    print("Statistics: " + str(result) + " tags get, saved in ./" + answer["fileName"])
 
 
 if __name__ == "__main__":

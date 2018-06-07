@@ -10,7 +10,7 @@ import ssl
 import time
 import os
 import csv
-import translate
+import translate as t
 import random
 
 # Define some variables
@@ -24,18 +24,34 @@ sslContext = ssl._create_unverified_context()
 def scratchTag(page, fileName):
     global counter
 
+    translateBuffer = ""
+    translateResult = ""
+    translateResultArray = []
+    temp = ""
+
     # Start scratching
     response = request.urlopen("https://segmentfault.com/tags/all?page=" + page, context=sslContext)
     html = response.read().decode("utf-8")
 
     # Initialize the BeautifulSoup package
     soupObj = soup(html, "html.parser")
+    tagsObj = soupObj.select("div.widget-tag h2 a")
 
-    # Open a file
+    # Fill the buffer with strings
+    for each in tagsObj:
+        translateBuffer += each.get_text()
+        # A little trick making google translate can translate multi words separately
+        translateBuffer += "、"
+
+    # Translate
+    translateResult = t.translate("zh-CN", "en", translateBuffer)
+    translateResultArray = translateResult.split(",")
+
+    # Write to the CSV file
     with open("./" + fileName, "a+", encoding="utf-8") as f:
-        for each in soupObj.select("div.widget-tag h2 a"):
+        for each in tagsObj:
             fieldnames = ["id", "zh-cn", "en-us"]
-            eachRow = {"id": str(counter + 1), "zh-cn": each.get_text(), "en-us": translate.translate("zh-CN", "en", each.get_text()).strip()}
+            eachRow = {"id": str(counter + 1), "zh-cn": each.get_text(), "en-us": translateResultArray.pop(0).strip()}
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writerow(eachRow)
             print("- Data No." + str(counter) + ":")
@@ -45,7 +61,7 @@ def scratchTag(page, fileName):
 
         # In case of being banned by Google Translate, sleep for a while
         time.sleep(random.randint(10, 30))
-        print("\n\nCooling.......\n\n");
+        print("\n\nCooling.......\n\n")
 
     return counter
 

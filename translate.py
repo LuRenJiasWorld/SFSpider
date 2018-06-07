@@ -64,9 +64,17 @@ class googleApiCrawler:
             ('q', self.keyword)]
         googleTranslateUrl = self.translateUrl + urlencode(data)
         googleTranslatePage = requests.get(googleTranslateUrl)
-        textPar = re.compile('\[\[\["(.*?)","')
-        translateText = textPar.search(googleTranslatePage.text).group(1)
-        return translateText
+
+        # Transform the array-like text into python's list object
+        googleTranslateArray = eval(googleTranslatePage.text.replace("null", "\"???\""))
+        mergedText = ""
+
+        # The previous [0] represents the main array
+        # The next [0] represents the post-translated text
+        for each in range(len(googleTranslateArray[0])):
+            mergedText += googleTranslateArray[0][each][0]
+
+        return mergedText
 
 
 def translate(sl, tl, keyword):
@@ -74,4 +82,3 @@ def translate(sl, tl, keyword):
     language = crawl.crawl()
     # print(language)
     return language
-

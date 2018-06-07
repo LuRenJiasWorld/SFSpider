@@ -54,14 +54,15 @@ def scratchTag(page, fileName):
             eachRow = {"id": str(counter + 1), "zh-cn": each.get_text(), "en-us": translateResultArray.pop(0).strip()}
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writerow(eachRow)
-            print("- Data No." + str(counter) + ":")
+            print("- Data No." + str(counter + 1) + ":")
             for key, value in eachRow.items():
                 print("\t" + key + " - " + value)
             counter += 1
+            time.sleep(random.uniform(0.5, 1))
 
         # In case of being banned by Google Translate, sleep for a while
-        time.sleep(random.randint(10, 30))
         print("\n\nCooling.......\n\n")
+        time.sleep(random.randint(3, 8))
 
     return counter
 

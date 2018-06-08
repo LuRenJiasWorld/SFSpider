@@ -44,8 +44,21 @@ def scratchTag(page, fileName):
         translateBuffer += "、"
 
     # Translate
-    translateResult = t.translate("zh-CN", "en", translateBuffer)
-    translateResultArray = translateResult.split(",")
+    try:
+        translateResult = t.translate("zh-CN", "en", translateBuffer)
+        translateResultArray = translateResult.split(",")
+    except ssl.SSLEOFError:
+        fuckingGoogle = '''
+                            Fucking Google has blocked your connection again!\n
+                            You can have a coffee and come back to your work again.\n
+                            When you want to restart your process, input Y, and press Enter\n        
+                        '''
+        print(fuckingGoogle)
+        print("We will continue the scratch work from page" + page)
+
+        if input("Type Y/y to Continue") == "Y" or "y":
+            portal(page)
+
 
     # Write to the CSV file
     with open("./" + fileName, "a+", encoding="utf-8") as f:
@@ -58,16 +71,16 @@ def scratchTag(page, fileName):
             for key, value in eachRow.items():
                 print("\t" + key + " - " + value)
             counter += 1
-            time.sleep(random.uniform(0.5, 1))
+            time.sleep(random.uniform(0.1, 0.3))
 
         # In case of being banned by Google Translate, sleep for a while
         print("\n\nCooling.......\n\n")
-        time.sleep(random.randint(3, 8))
+        time.sleep(random.randint(3, 5))
 
     return counter
 
 
-def portal():
+def portal(startPage=0):
     answer = {}
     result = 0
 
@@ -93,7 +106,7 @@ def portal():
 
     sleepTime = answer["sleepTime"]
 
-    for i in range(int(answer["pages"])):
+    for i in range(int(startPage), int(answer["pages"])):
         print("\n\nStart the No." + str(i + 1) + " of " + str(answer["pages"]) + " scratchs......\n")
         time.sleep(sleepTime)
         result = scratchTag(str(i + 1), answer["fileName"])
